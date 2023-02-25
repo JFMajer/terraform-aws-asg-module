@@ -15,7 +15,7 @@ data "aws_subnets" "default" {
 
 resource "aws_launch_configuration" "asg_lc" {
   name_prefix   = "${var.cluster_name}-lc-"
-  image_id      = "ami-09e1162c87f73958b"
+  image_id      = "ami-0bb935e4614c12d86"
   instance_type = "t3.micro"
   spot_price = "0.0108"
   security_groups = [aws_security_group.asg_sg.id]

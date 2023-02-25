@@ -1,7 +1,7 @@
 variable "server_port" {
     description = "The port the web server will listen on"
     type = number
-    default = 8080
+    default = 80
 }
 
 variable "db_address" {

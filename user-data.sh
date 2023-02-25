@@ -1,7 +1,7 @@
 #!/bin/bash
-yum update -y
-amazon-linux-extras install nginx1 -y
-amazon-linux-extras enable nginx1
+sudo amazon-linux-extras enable epel
+sudo yum install nginx -y
+
 
 INSTANCE_ID="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
 PRIVATE_IP="$(hostname -I)"
@@ -23,7 +23,7 @@ cat > index.html <<EOF
 </ul></p>
 EOF
 
-mv index.html /usr/share/nginx/html/index.html
+sudo mv index.html /usr/share/nginx/html/index.html
 
-systemctl enable nginx
-systemctl start nginx
+sudo systemctl enable nginx
+sudo systemctl start nginx

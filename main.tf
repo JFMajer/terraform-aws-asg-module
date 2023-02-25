@@ -40,6 +40,7 @@ resource "aws_security_group" "asg_sg" {
 resource "aws_security_group_rule" "asg_sg_rule_ingress" {
     type = "ingress"
     description = "Allow traffic only from load balancer"
+    from_port = var.server_port
     to_port = var.server_port
     protocol = "tcp"
     source_security_group_id = aws_security_group.asg_lb_sg.id

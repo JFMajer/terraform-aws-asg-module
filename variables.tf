@@ -24,3 +24,9 @@ variable "custom_tags" {
     type = map(string)
     default = {}
 }
+
+variable "server_text" {
+    description = "The text to be displayed on the web server"
+    type = string
+    default = "Hello, World!"
+}

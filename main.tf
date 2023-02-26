@@ -21,6 +21,7 @@ resource "aws_launch_configuration" "asg_lc" {
   security_groups = [aws_security_group.asg_sg.id]
 
   user_data = templatefile("${path.module}/user-data.sh", {
+    server_text = var.server_text,
     server_port = var.server_port,
     db_address = var.db_address,
     db_port = var.db_port

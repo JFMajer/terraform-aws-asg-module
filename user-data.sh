@@ -1,6 +1,6 @@
 #!/bin/bash
 sudo amazon-linux-extras enable epel
-sudo yum install nginx -y
+sudo amazon-linux-extras install nginx1 -y
 
 
 INSTANCE_ID="$(curl http://169.254.169.254/latest/meta-data/instance-id)"

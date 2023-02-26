@@ -66,6 +66,11 @@ resource "aws_autoscaling_group" "asg" {
   target_group_arns = [aws_lb_target_group.asg_tg.arn]
   health_check_type = "ELB"
   health_check_grace_period = 300 
+  min_elb_capacity = 1
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
     tag {
         key = "Name"

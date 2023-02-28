@@ -30,3 +30,18 @@ variable "server_text" {
     type = string
     default = "Hello, World!"
 }
+
+variable "asg_subnets" {
+    description = "The subnets to deploy the ASG into"
+    type = list(string)
+}
+
+variable "alb_subnets" {
+    description = "The subnets to deploy the ALB into"
+    type = list(string)
+}
+
+variable "vpc_id" {
+    description = "The VPC to deploy the resources into"
+    type = string
+}

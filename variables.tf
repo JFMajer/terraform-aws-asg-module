@@ -45,3 +45,9 @@ variable "vpc_id" {
     description = "The VPC to deploy the resources into"
     type = string
 }
+
+variable "scale_in_at_night" {
+    description = "Whether to scale in the ASG at night"
+    type = bool
+    default = true
+}

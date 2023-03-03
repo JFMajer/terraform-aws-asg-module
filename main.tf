@@ -179,3 +179,13 @@ resource "aws_lb_target_group" "asg_tg" {
     }
 }
 
+resource "aws_autoscaling_schedule" "scale_in_at_night" {
+    count = var.scale_in_at_night ? 1 : 0
+    scheduled_action_name = "${var.cluster_name}-scale-in-at-night"
+    autoscaling_group_name = aws_autoscaling_group.asg.name
+    desired_capacity = 0
+    recurrence = "0 19 * * *"
+    min_size = 0
+    max_size = 2
+}
+

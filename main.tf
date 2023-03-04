@@ -1,5 +1,6 @@
 locals {
     http_port = 80
+    https_port = 443
 }
 
 #************************************************************|
@@ -101,6 +102,7 @@ resource "aws_lb" "asg_lb" {
   subnets            = var.alb_subnets
 }
 
+# http listener
 resource "aws_lb_listener" "http" {
     load_balancer_arn = aws_lb.asg_lb.arn
     port              = local.http_port
@@ -117,19 +119,53 @@ resource "aws_lb_listener" "http" {
     }
 }
 
-resource "aws_lb_listener_rule" "asg_lb_listener_rule" {
+resource "aws_lb_listener_rule" "asg_lb_listener_rule_http_to_https" {
     listener_arn = aws_lb_listener.http.arn
     priority     = 100
 
     action {
-        type             = "forward"
+        type = "redirect"
+
+        redirect {
+            port        = local.https_port
+            protocol    = "HTTPS"
+            status_code = "HTTP_301"
+        }
+    }
+}
+
+# https listener
+resource "aws_lb_listener" "https" {
+    load_balancer_arn = aws_lb.asg_lb.arn
+    port              = local.https_port
+    protocol          = "HTTPS"
+    ssl_policy        = "ELBSecurityPolicy-2016-08"
+    certificate_arn   = var.certificate_arn
+
+    default_action {
+        type = "fixed-response"
+
+        fixed_response {
+            content_type = "text/plain"
+            message_body = "Hello, World"
+            status_code  = "200"
+        }
+    }
+}
+
+# https listener rule
+resource "aws_lb_listener_rule" "asg_lb_listener_rule_https" {
+    listener_arn = aws_lb_listener.https.arn
+    priority     = 100
+
+    action {
+        type = "forward"
         target_group_arn = aws_lb_target_group.asg_tg.arn
     }
 
     condition {
-        path_pattern {
-            values = ["*"]
-        }
+        field  = "path-pattern"
+        values = ["/"]
     }
 }
 
@@ -147,6 +183,15 @@ resource "aws_security_group_rule" "allow_http_to_alb" {
     security_group_id = aws_security_group.asg_lb_sg.id
     from_port         = local.http_port
     to_port           = local.http_port
+    protocol          = "tcp"
+    cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "allow_https_to_alb" {
+    type              = "ingress"
+    security_group_id = aws_security_group.asg_lb_sg.id
+    from_port         = local.https_port
+    to_port           = local.https_port
     protocol          = "tcp"
     cidr_blocks       = ["0.0.0.0/0"]
 }

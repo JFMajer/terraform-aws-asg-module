@@ -51,3 +51,8 @@ variable "scale_in_at_night" {
     type = bool
     default = true
 }
+
+variable "certificate_arn" {
+    description = "The ARN of the certificate to use for HTTPS"
+    type = string
+}

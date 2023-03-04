@@ -3,9 +3,9 @@ locals {
     https_port = 443
 }
 
-#************************************************************|
-# Launch Configuration                                       |
-#************************************************************|
+#************************************************************#
+# Launch Configuration                                       #
+#************************************************************#
 resource "aws_launch_configuration" "asg_lc" {
   name_prefix   = "${var.cluster_name}-lc-"
   image_id      = "ami-0bb935e4614c12d86"
@@ -25,9 +25,9 @@ resource "aws_launch_configuration" "asg_lc" {
     }
 }
 
-#************************************************************|
-# Autoscaling Group Security Group                           | 
-#************************************************************|
+#************************************************************#
+# Autoscaling Group Security Group                           # 
+#************************************************************#
 resource "aws_security_group" "asg_sg" {
     name = "${var.cluster_name}-tg-sg"
     description = "Allow HTTP traffic from load balancer"
@@ -53,9 +53,9 @@ resource "aws_security_group_rule" "asg_sg_rule_egress" {
     security_group_id = aws_security_group.asg_sg.id
 }
 
-#************************************************************|
-# Autoscaling Group                                          | 
-#************************************************************|
+#************************************************************#
+# Autoscaling Group                                          # 
+#************************************************************#
 resource "aws_autoscaling_group" "asg" {
   name_prefix = "${var.cluster_name}-asg-"
   min_size = 2
@@ -91,9 +91,9 @@ resource "aws_autoscaling_group" "asg" {
     }
 }
 
-#************************************************************|
-# Application Load Balancer                                  |
-#************************************************************|
+#************************************************************#
+# Application Load Balancer Core                             # 
+#************************************************************#
 resource "aws_lb" "asg_lb" {
   name               = "${var.cluster_name}-alb"
   internal           = false
@@ -102,7 +102,9 @@ resource "aws_lb" "asg_lb" {
   subnets            = var.alb_subnets
 }
 
-# http listener
+#************************************************************#
+# Application Load Balancer HTTP Listener                    #
+#************************************************************#
 resource "aws_lb_listener" "http" {
     load_balancer_arn = aws_lb.asg_lb.arn
     port              = local.http_port
@@ -119,6 +121,9 @@ resource "aws_lb_listener" "http" {
     }
 }
 
+#*******************************************************************#
+# Application Load Balancer HTTP Listener Rule redirect 80 --> 443  #
+#*******************************************************************#
 resource "aws_lb_listener_rule" "asg_lb_listener_rule_http_to_https" {
     listener_arn = aws_lb_listener.http.arn
     priority     = 100
@@ -139,7 +144,9 @@ resource "aws_lb_listener_rule" "asg_lb_listener_rule_http_to_https" {
     }
 }
 
-# https listener
+#************************************************************#
+# Application Load Balancer https listener                   #
+#************************************************************#
 resource "aws_lb_listener" "https" {
     load_balancer_arn = aws_lb.asg_lb.arn
     port              = local.https_port
@@ -158,7 +165,9 @@ resource "aws_lb_listener" "https" {
     }
 }
 
-# https listener rule
+#************************************************************#
+# Application Load Balancer https listener rule              #
+#************************************************************#
 resource "aws_lb_listener_rule" "asg_lb_listener_rule_https" {
     listener_arn = aws_lb_listener.https.arn
     priority     = 100
@@ -175,9 +184,9 @@ resource "aws_lb_listener_rule" "asg_lb_listener_rule_https" {
     }
 }
 
-#************************************************************|
-# Application Load Balancer Security Group                   |
-#************************************************************|
+#************************************************************#
+# Application Load Balancer Security Group                   #
+#************************************************************#
 resource "aws_security_group" "asg_lb_sg" {
   name        = "${var.cluster_name}-alb-sg"
   description = "Allow HTTP traffic"
@@ -211,9 +220,9 @@ resource "aws_security_group_rule" "allow_all_outbound" {
     cidr_blocks       = ["0.0.0.0/0"]
 }
 
-#************************************************************|
-# Application Load Balancer Target Group                     |
-#************************************************************|
+#************************************************************#
+# Application Load Balancer Target Group                     #
+#************************************************************#
 resource "aws_lb_target_group" "asg_tg" {
   name     = "${var.cluster_name}-tg"
   port     = var.server_port
@@ -232,6 +241,9 @@ resource "aws_lb_target_group" "asg_tg" {
     }
 }
 
+#************************************************************#
+# Auto Scaling Group Schedules                               #
+#************************************************************#
 resource "aws_autoscaling_schedule" "scale_in_at_night" {
     count = var.scale_in_at_night ? 1 : 0
     scheduled_action_name = "${var.cluster_name}-scale-in-at-night"

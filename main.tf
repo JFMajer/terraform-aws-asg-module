@@ -252,3 +252,30 @@ resource "aws_autoscaling_schedule" "scale_in_at_night" {
     max_size = 2
 }
 
+#************************************************************#
+# RDS Security Group                                         # 
+#************************************************************#
+resource "aws_security_group" "rds_sg" {
+    name = "${var.cluster_name}-rds-sg"
+    description = "Allow traffic only from ASG EC2 instances"
+    vpc_id = var.vpc_id
+}
+
+resource "aws_security_group_rule" "rds_sg_rule_ingress" {
+    type = "ingress"
+    description = "Allow traffic only from ASG EC2 instances"
+    from_port = 3306
+    to_port = 3306
+    protocol = "tcp"
+    source_security_group_id = aws_security_group.asg_sg.id
+    security_group_id = aws_security_group.rds_sg.id
+}
+
+resource "aws_security_group_rule" "rds_sg_rule_egress" {
+    type = "egress"
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    security_group_id = aws_security_group.rds_sg.id
+}

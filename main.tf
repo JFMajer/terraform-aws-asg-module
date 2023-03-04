@@ -169,8 +169,9 @@ resource "aws_lb_listener_rule" "asg_lb_listener_rule_https" {
     }
 
     condition {
-        field  = "path-pattern"
-        values = ["/"]
+        path_pattern {
+            values = ["/*"]
+        }
     }
 }
 

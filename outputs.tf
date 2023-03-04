@@ -15,3 +15,8 @@ output "alb_zone_id" {
   value = aws_lb.asg_lb.zone_id
   description = "Zone ID of the load balancer"
 }
+
+output "asg_security_group_id" {
+  value = aws_security_group.asg_sg.id
+  description = "Security group ID of the ASG"
+}

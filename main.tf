@@ -132,6 +132,11 @@ resource "aws_lb_listener_rule" "asg_lb_listener_rule_http_to_https" {
             status_code = "HTTP_301"
         }
     }
+    condition {
+        path_pattern {
+            values = ["/*"]
+        }
+    }
 }
 
 # https listener

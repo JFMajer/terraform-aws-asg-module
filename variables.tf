@@ -4,16 +4,6 @@ variable "server_port" {
     default = 80
 }
 
-variable "db_address" {
-    description = "The address of the database"
-    type = string
-}
-
-variable "db_port" {
-    description = "The port of the database"
-    type = number
-}
-
 variable "cluster_name" {
     description = "Name of the cluster"
     type        = string

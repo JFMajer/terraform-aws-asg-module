@@ -61,7 +61,7 @@ resource "aws_autoscaling_group" "asg" {
   desired_capacity = 2
   launch_configuration = aws_launch_configuration.asg_lc.name
   vpc_zone_identifier = var.asg_subnets
-  target_group_arns = [avar.target_group_arn]
+  target_group_arns = [var.target_group_arn]
   health_check_type = "ELB"
   health_check_grace_period = 300 
 

@@ -26,11 +26,6 @@ variable "asg_subnets" {
     type = list(string)
 }
 
-variable "alb_subnets" {
-    description = "The subnets to deploy the ALB into"
-    type = list(string)
-}
-
 variable "vpc_id" {
     description = "The VPC to deploy the resources into"
     type = string
@@ -42,7 +37,12 @@ variable "scale_in_at_night" {
     default = true
 }
 
-variable "certificate_arn" {
-    description = "The ARN of the certificate to use for HTTPS"
+variable "alb_sg_id" {
+    description = "The security group ID of the ALB"
+    type = string
+}
+
+variable "target_group_arn" {
+    description = "The ARN of the target group"
     type = string
 }

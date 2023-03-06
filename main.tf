@@ -3,6 +3,32 @@ locals {
     https_port = 443
 }
 
+###############################################################
+# Launch Template                                             #
+###############################################################
+resource "aws_launch_template" "asg_lt" {
+  name_prefix   = "${var.cluster_name}-lt-"
+  image_id      = "ami-0bb935e4614c12d86"
+  instance_type = "t3.micro"
+  market_type = "spot"
+  vpc_security_group_ids = [aws_security_group.asg_sg.id]
+
+  spot_options {
+    spot_instance_type = "one-time"
+    max_price = "0.0108"
+  }
+
+  user_data = templatefile("${path.module}/user-data.sh", {
+    server_text = var.server_text,
+    server_port = var.server_port
+  })
+
+    lifecycle {
+        create_before_destroy = true
+    }
+}
+
+
 #************************************************************#
 # Launch Configuration                                       #
 #************************************************************#
@@ -59,11 +85,16 @@ resource "aws_autoscaling_group" "asg" {
   min_size = 2
   max_size = 5
   desired_capacity = 2
-  launch_configuration = aws_launch_configuration.asg_lc.name
+  #launch_configuration = aws_launch_configuration.asg_lc.name
   vpc_zone_identifier = var.asg_subnets
   target_group_arns = [var.target_group_arn]
   health_check_type = "ELB"
   health_check_grace_period = 300 
+
+    launch_template {
+        id = aws_launch_template.asg_lt.id
+        version = aws_launch_template.asg_lt.latest_version
+    }
 
     instance_refresh {
         strategy = "Rolling"

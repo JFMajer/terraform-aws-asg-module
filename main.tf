@@ -20,10 +20,10 @@ resource "aws_launch_template" "asg_lt" {
     }
   }
 
-  user_data = filebase64("${path.module}/user-data.sh", {
+  user_data = filebase64(templatefile("${path.module}/user-data.sh", {
     server_text = var.server_text,
     server_port = var.server_port
-  })
+  }))
 
     lifecycle {
         create_before_destroy = true

@@ -10,12 +10,14 @@ resource "aws_launch_template" "asg_lt" {
   name_prefix   = "${var.cluster_name}-lt-"
   image_id      = "ami-0bb935e4614c12d86"
   instance_type = "t3.micro"
-  market_type = "spot"
   vpc_security_group_ids = [aws_security_group.asg_sg.id]
 
-  spot_options {
-    spot_instance_type = "one-time"
-    max_price = "0.0108"
+  instance_market_options {
+    market_type = "spot"
+    spot_options {
+      spot_instance_type = "one-time"
+      max_price = "0.0108"
+    }
   }
 
   user_data = templatefile("${path.module}/user-data.sh", {
